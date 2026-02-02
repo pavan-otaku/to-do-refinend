@@ -2,6 +2,17 @@ let input = document.getElementById("myInput");
 let list = document.getElementById("lists");
 let add = document.getElementById("addButton");
 
+// save data
+function saveData() {
+    localStorage.setItem("data", list.innerHTML);
+}
+
+// show saved data
+function showData() {
+    list.innerHTML = localStorage.getItem("data") || "";
+}
+
+// add task
 add.addEventListener("click", function (event) {
     event.preventDefault();
 
@@ -10,29 +21,17 @@ add.addEventListener("click", function (event) {
         return;
     }
 
-    // create elements PER task
     let li = document.createElement("li");
 
     let checkbox = document.createElement("input");
     checkbox.type = "checkbox";
 
     let taskText = document.createElement("span");
-    taskText.innerText = " " + input.value;
+    taskText.innerText = input.value;
 
     let delbtn = document.createElement("button");
     delbtn.innerText = "❌";
     delbtn.disabled = true;
-
-    // checkbox logic
-    checkbox.addEventListener("change", function () {
-        delbtn.disabled = !checkbox.checked;
-        taskText.classList.toggle("completed");
-    });
-
-    // delete logic
-    delbtn.addEventListener("click", function () {
-        li.remove();
-    });
 
     li.appendChild(checkbox);
     li.appendChild(taskText);
@@ -40,4 +39,29 @@ add.addEventListener("click", function (event) {
     list.appendChild(li);
 
     input.value = "";
+    saveData();
 });
+
+// event delegation (works after reload)
+list.addEventListener("click", function (e) {
+    let li = e.target.closest("li");
+    if (!li) return;
+
+    let checkbox = li.querySelector("input[type='checkbox']");
+    let delbtn = li.querySelector("button");
+    let taskText = li.querySelector("span");
+
+    if (e.target.type === "checkbox") {
+        delbtn.disabled = !e.target.checked;
+        taskText.classList.toggle("completed");
+        saveData();
+    }
+
+    if (e.target.tagName === "BUTTON") {
+        li.remove();
+        saveData();
+    }
+});
+
+// load stored tasks
+showData();
