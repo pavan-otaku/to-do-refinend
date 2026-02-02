@@ -1,67 +1,66 @@
-let input = document.getElementById("myInput");
-let list = document.getElementById("lists");
-let add = document.getElementById("addButton");
+document.addEventListener("DOMContentLoaded", function () {
 
-// save data
-function saveData() {
-    localStorage.setItem("data", list.innerHTML);
-}
+    let input = document.getElementById("myInput");
+    let list = document.getElementById("lists");
+    let add = document.getElementById("addButton");
 
-// show saved data
-function showData() {
-    list.innerHTML = localStorage.getItem("data") || "";
-}
-
-// add task
-add.addEventListener("click", function (event) {
-    event.preventDefault();
-
-    if (input.value.trim() === "") {
-        alert("Enter a valid task!");
-        return;
+    function saveData() {
+        localStorage.setItem("data", list.innerHTML);
     }
 
-    let li = document.createElement("li");
+    function showData() {
+        list.innerHTML = localStorage.getItem("data") || "";
+    }
 
-    let checkbox = document.createElement("input");
-    checkbox.type = "checkbox";
+    add.addEventListener("click", function (event) {
+        event.preventDefault();
 
-    let taskText = document.createElement("span");
-    taskText.innerText = input.value;
+        if (input.value.trim() === "") {
+            alert("Enter a valid task!");
+            return;
+        }
 
-    let delbtn = document.createElement("button");
-    delbtn.innerText = "❌";
-    delbtn.disabled = true;
+        let li = document.createElement("li");
 
-    li.appendChild(checkbox);
-    li.appendChild(taskText);
-    li.appendChild(delbtn);
-    list.appendChild(li);
+        let checkbox = document.createElement("input");
+        checkbox.type = "checkbox";
 
-    input.value = "";
-    saveData();
-});
+        let taskText = document.createElement("span");
+        taskText.innerText = input.value;
 
-// event delegation (works after reload)
-list.addEventListener("click", function (e) {
-    let li = e.target.closest("li");
-    if (!li) return;
+        let delbtn = document.createElement("button");
+        delbtn.innerText = "❌";
+        delbtn.disabled = true;
 
-    let checkbox = li.querySelector("input[type='checkbox']");
-    let delbtn = li.querySelector("button");
-    let taskText = li.querySelector("span");
+        li.appendChild(checkbox);
+        li.appendChild(taskText);
+        li.appendChild(delbtn);
+        list.appendChild(li);
 
-    if (e.target.type === "checkbox") {
-        delbtn.disabled = !e.target.checked;
-        taskText.classList.toggle("completed");
+        input.value = "";
         saveData();
-    }
+    });
 
-    if (e.target.tagName === "BUTTON") {
-        li.remove();
-        saveData();
-    }
+    // event delegation (IMPORTANT for GitHub Pages)
+    list.addEventListener("click", function (e) {
+        let li = e.target.closest("li");
+        if (!li) return;
+
+        let checkbox = li.querySelector("input[type='checkbox']");
+        let delbtn = li.querySelector("button");
+        let taskText = li.querySelector("span");
+
+        if (e.target.type === "checkbox") {
+            delbtn.disabled = !e.target.checked;
+            taskText.classList.toggle("completed");
+            saveData();
+        }
+
+        if (e.target.tagName === "BUTTON") {
+            li.remove();
+            saveData();
+        }
+    });
+
+    showData();
 });
-
-// load stored tasks
-showData();
